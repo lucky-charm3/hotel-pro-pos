@@ -164,7 +164,7 @@ function UpdateProduct({setToast})
 
     const {data}=useGetProductById(id);
 
-    const product=data.product;
+    const product=data?.product;
 
     const{register,formState:{errors},handleSubmit}=useForm({
                                                                                                                         mode:'onChange',

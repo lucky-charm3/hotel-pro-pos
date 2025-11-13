@@ -1,5 +1,5 @@
 import {useState,useRef} from 'react'
-import {Outlet,useNavigate,useSearchParams} from 'react-router-dom';
+import {Outlet,useNavigate,useSearchParams,useOutletContext} from 'react-router-dom';
 import {useGetAllProducts} from '../hooks/productQuery.js';
 import {useAuth} from '../contexts/authContext.jsx';
 import Table from '../sharedComponents/table.jsx';
@@ -116,7 +116,7 @@ export default function ProductsManagement()
             totalPages={data?.totalPages}
             onPageChange={handlePageChange}
             />
-            <Outlet/>
+            <Outlet context={useOutletContext()}/>
         </div>
     )
 }
