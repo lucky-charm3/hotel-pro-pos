@@ -1,3 +1,4 @@
+import {useEffect} from 'react';
 import {useParams,useNavigate,useOutletContext} from 'react-router-dom';
 import {useForm} from 'react-hook-form';
 import {useUpdateBanking,useGetBankingById} from '../hooks/bankingQuery.js';
@@ -14,11 +15,17 @@ const {id}=useParams();
 
 const {data:banking}=useGetBankingById(id);
 
-const {register,handleSubmit,formState:{errors}}=useForm({mode:'onChange',
-                                                                                                                                        defaultValues:{type:banking?.type,
-                                                                                                                                        amount:banking?.amount,
-                                                                                                                                        description:banking?.description
-                                                                                                                                    }})
+const {register,handleSubmit,formState:{errors},reset}=useForm({mode:'onChange',})
+
+useEffect(() => {
+    if (banking) {
+      reset({
+        type: banking.type,
+        amount: banking.amount,
+        description: banking.description
+      });
+    }
+  }, [banking, reset]);
 
 const{mutate:updateBanking}=useUpdateBanking();
 
@@ -32,6 +39,7 @@ const onSubmit=(data)=>{
     catch(error)
     {
    setToast(prev=>({...prev,
+                                            isOpen:true,
                                             status:'danger',
                                             message:error.message}))
     }
@@ -75,7 +83,7 @@ return(
                     <p className='text-danger text-xs font-thin'>{errors?.description?.message}</p>
             </label>
          <Button type='submit' color1='primary'  color2='primary-dark'>
-          Add Banking
+          Update Banking
          </Button>
         </form>
 )
@@ -87,12 +95,14 @@ const {id}=useParams();
 
 const {data:expense}=useGetExpenseById(id);
 
-const{register,handleSubmit,formState:{errors}}=useForm({mode:'onChange',
-                                                                                                                                       defaultValues:{
-                                                                                                                                       name:expense?.name,
-                                                                                                                                       category:expense?.category,
-                                                                                                                                       description:expense?.description
-                                                                                                                                       }});
+const{register,handleSubmit,formState:{errors},reset}=useForm({mode:'onChange', });
+
+useEffect(()=>{
+reset({
+name:expense?.name,
+category:expense?.category,
+description:expense?.description})                                                                                                                                      
+},[expense,reset])
 
  const{mutate:updateExpense}=useUpdateExpense();
 
@@ -104,6 +114,7 @@ const onSubmit=(data)=>{
     try{
   updateExpense(data);
   setToast(prev=>({...prev,
+                        isOpen:true,
                         message:'Expense updated successfully',
                         status:'success'
 }))
@@ -162,21 +173,21 @@ function UpdateProduct({setToast})
 {
     const{id}=useParams();
 
-    const {data}=useGetProductById(id);
+    const {data:product}=useGetProductById(id);
 
-    const product=data?.product;
+    const{register,formState:{errors},handleSubmit,reset}=useForm({
+                                                                                                                        mode:'onChange',})
+   
+   useEffect(()=>{
+   reset({
+   name:product?.name,
+   price:product?.price,
+   stock:product?.stock,
+   category:product?.category
+})
+   },[product,reset])
 
-    const{register,formState:{errors},handleSubmit}=useForm({
-                                                                                                                        mode:'onChange',
-                                                                                                                        defaultValues:{
-                                                                                                                            name:product?.name,
-                                                                                                                            price:product?.price,
-                                                                                                                            stock:product?.stock,
-                                                                                                                            category:product?.category
-                                                                                                                        }
-                                                                                                                    })
-
-    const{mutate:updateProduct}=useUpdateProduct();
+const{mutate:updateProduct}=useUpdateProduct();
 
     const categories=['foods','drinks','services','others']
 
@@ -191,6 +202,7 @@ function UpdateProduct({setToast})
         catch(error)
         {
   setToast(prev=>({...prev,
+                        isOpen:true,
                         status:'danger',
                         message:error.message
                     }))
@@ -251,6 +263,11 @@ function UpdateProduct({setToast})
                 </select>
                 <p className='text-danger font-thin text-xs'>{errors?.category?.message}</p>
                 </label>
+                <Button type='submit'
+                color1='primary'
+                color2='primary-dark'>
+                    Update Product
+                    </Button>
             </form>
     )
 }
@@ -259,20 +276,23 @@ function UpdateUser({setToast})
 {
     const {id}=useParams();
 
-    const{data:user}=useGetUserById(id)
+    const{data}=useGetUserById(id);
 
-    const{register,handleSubmit,watch,formState:{errors}}=useForm({
-                                                                                                                            mode:'onChange',
-                                                                                                                            defaultValues:{
-                                                                                                                            username:user?.username,
-                                                                                                                            email:user?.email,
-                                                                                                                            phone:user?.phone,
-                                                                                                                            role:user?.role,
-                                                                                                                            password:user?.password,
-                                                                                                                            confirmPassword:user?.password
-                                                                                                                            }
-                                                                                                                        });
+    const user=data.user;
 
+    const{register,handleSubmit,watch,formState:{errors},reset}=useForm({
+                                                                                                                            mode:'onChange'});
+    
+ useEffect(()=>{
+  reset({
+    username:user?.username,
+    email:user?.email,
+    phone:user?.phone,
+    role:user?.role,
+    password:user?.password,
+    confirmPassword:user?.password
+    })
+    },[user,reset])
     const{mutate:updateUser}=useUpdateUser();
 
     const password=watch('password');
@@ -281,6 +301,7 @@ function UpdateUser({setToast})
         try{
             updateUser(data);
             setToast(prev=>({...prev,
+                                                    isOpen:true,
                                                     status:'success',
                                                     message:'User added succesfully'
                                                 }))
@@ -288,6 +309,7 @@ function UpdateUser({setToast})
         catch(error)
         {
         setToast(prev=>({...prev,
+                                                isOpen:true,
                                                 status:'danger',
                                                 message:error.message
                                                 }))

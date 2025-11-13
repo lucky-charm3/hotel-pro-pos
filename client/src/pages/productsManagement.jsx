@@ -74,6 +74,8 @@ export default function ProductsManagement()
     const handlePageChange=(newPage)=>{
         setSearchParams({page:newPage})
     }
+
+    const context=useOutletContext()
   
     if(authLoading||productsLoading)
     {
@@ -116,7 +118,7 @@ export default function ProductsManagement()
             totalPages={data?.totalPages}
             onPageChange={handlePageChange}
             />
-            <Outlet context={useOutletContext()}/>
+            <Outlet context={context}/>
         </div>
     )
 }

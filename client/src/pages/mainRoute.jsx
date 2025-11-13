@@ -18,7 +18,7 @@ const[toast,setToast]=useState({isOpen:false,status:'',message:''})
                 
                 <main className="flex-1 overflow-y-auto p-4 md:p-6">
                   <Outlet context={{setToast}}/>
-                  <Toast status={toast.status} message={toast.message}/>
+                  <Toast toast={toast} setToast={setToast}/>
                 </main>
               </div>
             </div>

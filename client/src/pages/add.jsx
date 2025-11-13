@@ -22,7 +22,10 @@ function AddUser({setToast}){
             createUser(data);
             setToast({isOpen:true,status:'success',message:'User added succesfully'});
         }catch(error){
-            setToast({isOpen:true,status:'danger',message:error.message});
+            setToast({
+                isOpen:true,
+                status:'danger',
+                message:error.message});
         }
     };
     

@@ -1,27 +1,48 @@
-import {useState} from 'react';
+import {useEffect} from 'react';
+import {useForm} from 'react-hook-form';
 import {useAuth} from '../contexts/authContext.jsx';
+import {useOutletContext} from 'react-router-dom';
 import {useUpdateProfile} from '../hooks/userQuery.js';
 import Input from '../UI/input.jsx';
 import Button from '../UI/button.jsx';
 
 export default function AccountManagement()
 {
-    const [formData,setFormData]=useState({username:'',
-                                                                                            password:'',email:'',
-                                                                                            phone:'',});
+    const{register,formState:{errors},reset,handleSubmit}=useForm({mode:'onChange'})
 
     const {user,loading:authLoading}=useAuth();
 
+    useEffect(()=>{
+        reset({
+            username:user?.username,
+            password:user?.password,
+            email:user?.email,
+            role:user?.role,
+            phone:user?.phone
+
+        })
+    },[reset,user])
+
+    const{setToast}=useOutletContext();
+
     const {mutate:updateProfile}=useUpdateProfile();
 
-    const handleInput=(e)=>{
-        const {name,value}=e.target;
-        setFormData(prev=>({...prev,[name]:value}))
-    }
-
-    const handleSubmit=(e)=>{
-        e.preventDefault();
-        updateProfile(formData);
+    const onSubmit=(formData)=>{
+        try{
+        updateProfile(formData)
+        setToast(prev=>({...prev,
+                                                    isOpen:true,
+                                                    status:'success',
+                                                    message:'Account updated succesfully'
+                                                }))
+        }
+        catch(error)
+        {
+            setToast(prev=>({...prev,
+                                                    isOpen:true,
+                                                    status:'danger',
+                                                    message:error.message}))
+        }
     }
 
     if(authLoading)
@@ -32,68 +53,92 @@ export default function AccountManagement()
     }
 
     return(
-        <section className='flex flex-col gap-6'>
+        <form className='flex flex-col gap-6' onSubmit={handleSubmit(onSubmit)}>
             <h1 className="text-3xl font-bold mb-6 text-primary-dark font-apple">Account Management</h1>
-            <label className='flex flex-col gap-3'>
-                <span className='font-semibold text-lg'>Username:</span>
-                <Input 
-                type='text' 
-                value={user.username}
-                name='username'
-                onChange={handleInput}
-                />
-            </label>
+            <label className='flex flex-col space-y-2'>
+            <span>Name:</span>
+            <input {...register('username',
+            {
+                required:true,
+                minLength:3,
+                pattern:{
+                    value:/^[a-zA-Z0-9]{3,30}$/,
+                    message:'Username should only contain 3 or more alphanumeric characters '
+                }
+            }
+        )}
+        className='input'
+        />
+        <p className='text-xs text-danger font-thin'>{errors?.username?.message}</p>
+        </label>
 
-             <label className='flex flex-col gap-3'>
-                <span className='font-semibold text-lg'>Email:</span>
-                <Input 
-                type='email' 
-                value={user.email}
-                name='email'
-                onChange={handleInput}
-                />
-            </label>
+        <label className='flex flex-col space-y-2'>
+            <span>Email:</span>
+            <input {...register('email',
+            {
+                required:true,
+                pattern:{
+                    value:/^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message:'Please input a correct email '
+                }
+            }
+        )}
+        className='input'
+        />
+        <p className='text-xs text-danger font-thin'>{errors?.email?.message}</p>
+        </label>
 
-             <label className='flex flex-col gap-3'>
-                <span className='font-semibold text-lg'>Phone Number:</span>
-                <Input 
-                type='text' 
-                value={user.phone}
-                name='phone'
-                onChange={handleInput}
-                />
-            </label>
+        <label className='flex flex-col space-y-2'>
+            <span>Phone:</span>
+            <input {...register('phone',
+            {
+                required:true,
+                pattern:{
+                    value:/^[0-9]{10,15}$/,
+                    message:'Please input a correct phone number'
+                }
+            }
+        )}
+        className='input'
+        />
+        <p className='text-xs text-danger font-thin'>{errors?.phone?.message}</p>
+        </label>
 
-             <label className='flex flex-col gap-3'>
-                <span className='font-semibold text-lg'>Password:</span>
-                <Input 
-                type='password' 
-                value={user.password}
-                name='password'
-                onChange={handleInput}
-                />
-            </label>
+        <label className='flex flex-col space-y-2'>
+            <span>Password:</span>
+            <input type='password' {...register('password',
+            {
+                required:true,
+                minLength:{
+                    value:6,
+                    message:'A password should be atleast 6 characters'
+                }
+            }
+        )}
+        className='input'
+        />
+        <p className='text-xs text-danger font-thin'>{errors?.password?.message}</p>
+        </label>
 
-             <label className='flex flex-col gap-3'>
-                <span className='font-semibold text-lg'>Role:</span>
-                <input 
-                type='text' 
-                value={user.role}
-                className=' rounded-xl px-4 py-2 mb-3 border
-                 focus:outline-none focus:ring-2 focus:ring-primary
-                 transition duration-300 w-full'
-                readOnly
-                />
-            </label>
+        <label className='flex flex-col space-y-2'>
+            <span>Role:</span>
+            <input  {...register('role'
+        )}
+        className='input'
+        readOnly
+        />
+        </label>
+
+
 
             <Button 
             color1='primary'  
             color2='primary-dark' 
             onClick={handleSubmit} 
-            type='button'>
+            type='submit'>
                 Update Profile
             </Button>
 
-        </section>
+        </form>
     )
 }

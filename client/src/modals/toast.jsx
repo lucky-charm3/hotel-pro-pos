@@ -1,7 +1,7 @@
-// toast.jsx
 import {useEffect} from 'react';
 
 export default function Toast({toast,setToast}){
+    
     useEffect(()=>{
         if(toast?.isOpen){
             const t=setTimeout(()=>setToast(prev=>({...prev,isOpen:false})),3000);

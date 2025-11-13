@@ -1,6 +1,6 @@
 import {useState,useRef} from 'react';
 import {useAuth} from '../contexts/authContext.jsx';
-import {Outlet,useNavigate,useSearchParams} from 'react-router-dom';
+import {Outlet,useNavigate,useSearchParams,useOutletContext} from 'react-router-dom';
 import {useGetUsers,useGetCashiers} from '../hooks/userQuery.js';
 import Table from '../sharedComponents/table.jsx';
 import Button from '../UI/button.jsx';
@@ -98,6 +98,8 @@ export default function UsersManagement()
   setSearchParams({page:newPage})
     }
 
+    const context=useOutletContext();
+
     if(usersLoading||authLoading||cashiersLoading)
     {
         return (
@@ -145,7 +147,7 @@ export default function UsersManagement()
         cashiersData.totalPages}
      />
     
-   <Outlet/>
+   <Outlet context={context}/>
 </section>
     )
 }
