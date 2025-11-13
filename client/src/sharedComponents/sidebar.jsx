@@ -51,7 +51,7 @@ export default function Sidebar() {
   setIsOpen={setIsLogoutModalOpen}
   />
    
-      <button className='bg-primary rounded-lg p-3 text-white text-bold fixed z-40 top-2 left-5 lg:hidden'
+      <button className='bg-primary rounded-lg p-3 text-white text-bold fixed z-40 top-12 left-12 lg:hidden'
       onClick={()=>setIsSidebarOpen(!isSidebarOpen)}>
    <FaBars size={22}/>
       </button>

@@ -13,7 +13,7 @@ function UpdateBanking({setToast})
 
 const {id}=useParams();
 
-const {data:banking}=useGetBankingById(id);
+const {data:banking,isLoading}=useGetBankingById(id);
 
 const {register,handleSubmit,formState:{errors},reset}=useForm({mode:'onChange',})
 
@@ -44,6 +44,14 @@ const onSubmit=(data)=>{
                                             message:error.message}))
     }
 }
+
+if(isLoading) return (
+<div className='flex items-center justify-center'>
+<div className='h-12 w-12 rounded full border-t-primary-dark  animate-spin '>
+</div>
+<p>Loading banking ....</p>
+</div>
+)
 
 return(
 <form onSubmit={handleSubmit(onSubmit)}>
@@ -93,7 +101,7 @@ function UpdateExpense({setToast})
 {
 const {id}=useParams();
 
-const {data:expense}=useGetExpenseById(id);
+const {data:expense,isLoading}=useGetExpenseById(id);
 
 const{register,handleSubmit,formState:{errors},reset}=useForm({mode:'onChange', });
 
@@ -126,6 +134,15 @@ setToast(prev=>({...prev,
 }))
     }
 }
+
+if(isLoading) return (
+<div className='flex items-center justify-center'>
+<div className='h-12 w-12 rounded full border-t-primary-dark  animate-spin '>
+</div>
+<p>Loading expense ....</p>
+</div>
+)
+
 return(
      <form  onSubmit={handleSubmit(onSubmit)}>
              <label className='flex flex-col space-y-2'>
@@ -173,7 +190,7 @@ function UpdateProduct({setToast})
 {
     const{id}=useParams();
 
-    const {data:product}=useGetProductById(id);
+    const {data:product,isLoading}=useGetProductById(id);
 
     const{register,formState:{errors},handleSubmit,reset}=useForm({
                                                                                                                         mode:'onChange',})
@@ -208,6 +225,14 @@ const{mutate:updateProduct}=useUpdateProduct();
                     }))
         }
     }
+
+    if(isLoading) return (
+<div className='flex items-center justify-center'>
+<div className='h-12 w-12 rounded full border-t-primary-dark  animate-spin '>
+</div>
+<p>Loading product ....</p>
+</div>
+)
 
     return(
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -276,9 +301,9 @@ function UpdateUser({setToast})
 {
     const {id}=useParams();
 
-    const{data}=useGetUserById(id);
+    const{data,isLoading}=useGetUserById(id);
 
-    const user=data.user;
+    const user=data?.user;
 
     const{register,handleSubmit,watch,formState:{errors},reset}=useForm({
                                                                                                                             mode:'onChange'});
@@ -313,9 +338,16 @@ function UpdateUser({setToast})
                                                 status:'danger',
                                                 message:error.message
                                                 }))
-        }
-         
+        } 
     }
+
+if(isLoading) return (
+<div className='flex items-center justify-center'>
+<div className='h-12 w-12 rounded full border-t-primary-dark  animate-spin '>
+</div>
+<p>Loading user ....</p>
+</div>
+)
     
 return(
     <form onSubmit={handleSubmit(onSubmit)}>

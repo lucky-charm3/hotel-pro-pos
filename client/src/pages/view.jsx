@@ -10,7 +10,15 @@ import Table from '../sharedComponents/table.jsx';
 
 const SaleView=()=>{
     const {id}=useParams();
-    const {data:sale}=useGetSaleDetails(id);
+    const {data:sale,isLoading}=useGetSaleDetails(id);
+
+    if(isLoading) return (
+<div className='flex items-center justify-center'>
+<div className='h-12 w-12 rounded full border-t-primary-dark  animate-spin '>
+</div>
+<p>Loading sale ....</p>
+</div>
+)
 
     return(
         <div className='flex flex-col space-y-6'>
@@ -36,7 +44,15 @@ const SaleView=()=>{
 
 const BankingView=()=>{
     const {id}=useParams();
-    const {data:banking}=useGetBankingById(id);
+    const {data:banking,isLoading}=useGetBankingById(id);
+
+    if(isLoading) return (
+<div className='flex items-center justify-center'>
+<div className='h-12 w-12 rounded full border-t-primary-dark  animate-spin '>
+</div>
+<p>Loading banking ....</p>
+</div>
+)
 
     return(
         <div className='flex flex-col space-y-6'>
@@ -53,7 +69,16 @@ const BankingView=()=>{
 
 const ExpenseView=()=>{
     const {id}=useParams();
-    const {data:expense}=useGetExpenseById(id);
+    const {data:expense,isLoading}=useGetExpenseById(id);
+
+    if(isLoading) return (
+<div className='flex items-center justify-center'>
+<div className='h-12 w-12 rounded full border-t-primary-dark  animate-spin '>
+</div>
+<p>Loading banking ....</p>
+</div>
+)
+
     return(
         <div className='flex flex-col space-y-6'>
             <p><span className='font-semibold'>Expense name:</span> {expense?.name}</p>
@@ -69,7 +94,16 @@ const ExpenseView=()=>{
 
 const ProductView=()=>{
     const {id}=useParams();
-    const {data:product}=useGetProductById(id);
+    const {data:product,isLoading}=useGetProductById(id);
+
+    if(isLoading) return (
+<div className='flex items-center justify-center'>
+<div className='h-12 w-12 rounded full border-t-primary-dark  animate-spin '>
+</div>
+<p>Loading product ....</p>
+</div>
+)
+
     return(
         <div className='flex flex-col space-y-6'>
             <p><span className='font-semibold'>Product name:</span> {product?.name}</p>
@@ -84,7 +118,15 @@ const ProductView=()=>{
 
 const UserView=()=>{
     const {id}=useParams();
-    const {data:user}=useGetUserById(id);
+    const {data:user,isLoading}=useGetUserById(id);
+
+    if(isLoading) return (
+<div className='flex items-center justify-center'>
+<div className='h-12 w-12 rounded full border-t-primary-dark  animate-spin '>
+</div>
+<p>Loading user ....</p>
+</div>
+)
 
     return(
         <div className='flex flex-col space-y-6'>
@@ -99,7 +141,16 @@ const UserView=()=>{
 
 const ReportView=()=>{
     const {id}=useParams();
-    const {data:report}=useGetReportById(id);
+    const {data:report,isLoading}=useGetReportById(id);
+
+    if(isLoading) return (
+<div className='flex items-center justify-center'>
+<div className='h-12 w-12 rounded full border-t-primary-dark  animate-spin '>
+</div>
+<p>Loading report ....</p>
+</div>
+)
+
     return(
         <div className='flex flex-col space-y-6'>
             <p><span className='font-semibold'>Start date:</span> {report?.startDate}</p>
