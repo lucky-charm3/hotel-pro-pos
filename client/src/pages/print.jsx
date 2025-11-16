@@ -41,7 +41,7 @@ function PrintSale() {
           <p>Sale Receipt</p>
         </div>
         
-        <p><strong>Staff(Created By):</strong> ${sale?.createdBy?.username || 'N/A'}</p>
+        <p><strong>Staff(Created By):</strong> ${sale?.cashier?.username || 'N/A'}</p>
         <p><strong>Date:</strong> ${new Date(sale?.createdAt).toLocaleString()}</p>
         <p><strong>Receipt #:</strong> ${sale._id}</p>
         
@@ -69,12 +69,12 @@ function PrintSale() {
           <tfoot>
             <tr class="total">
               <td colspan="3">TOTAL</td>
-              <td>Tshs ${sale.totalAmount?.toFixed(2)}</td>
+              <td>Tshs ${sale?.totalPrice?.toFixed(2)}</td>
             </tr>
           </tfoot>
         </table>
         
-        ${sale.paymentMethod ? `<p><strong>Payment:</strong> ${sale.paymentMethod}</p>` : ''}
+        ${sale?.paymentMethod ? `<p><strong>Payment:</strong> ${sale.paymentMethod}</p>` : ''}
         
         <div class="thank-you">
           <p>Thank you for your business!</p>
@@ -103,7 +103,6 @@ function PrintSale() {
   return <div>Loading receipt...</div>;
 }
 
-// components/Print.jsx - Updated Report Part
 function PrintReport() {
     const { id } = useParams();
     const { data: report } = useGetReportById(id);
@@ -118,10 +117,12 @@ function PrintReport() {
     <style>
         @media print {
             body { 
-                font-family: 'Arial', sans-serif; 
+                font-family:'Arial', 'Helvetica', 'Courier New', sans-serif; 
                 font-size: 12px; 
                 margin: 0;
                 padding: 15px;
+                font-weight:bold;
+                line-height:1.2;
             }
             .no-print { display: none !important; }
             .page-break { page-break-after: always; }
