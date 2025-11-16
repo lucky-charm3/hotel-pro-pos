@@ -25,7 +25,7 @@ const saleController = {
         offset
       );
       
-      const total = await saleService.getTotalSalesCount(search, start_date, end_date, req.user.id);
+      const total = await saleService.getTotalSalesCount(search, start_date, end_date, req.user._id);
       
       res.status(200).json({
         success: true,

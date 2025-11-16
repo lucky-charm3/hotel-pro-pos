@@ -40,9 +40,9 @@ function PrintSale() {
           <p>Sale Receipt</p>
         </div>
         
-        <p><strong>Staff:</strong> ${sale.createdBy?.username || 'N/A'}</p>
-        <p><strong>Date:</strong> ${new Date(sale.createdAt).toLocaleString()}</p>
-        <p><strong>Receipt #:</strong> ${sale.reference || id}</p>
+        <p><strong>Staff(Created By):</strong> ${sale?.createdBy?.username || 'N/A'}</p>
+        <p><strong>Date:</strong> ${new Date(sale?.createdAt).toLocaleString()}</p>
+        <p><strong>Receipt #:</strong> ${sale._id}</p>
         
         <div class="divider"></div>
         
@@ -56,10 +56,10 @@ function PrintSale() {
             </tr>
           </thead>
           <tbody>
-            ${sale.items.map(item => `
+            ${sale?.items.map(item => `
               <tr>
-                <td>${item.name}</td>
-                <td>${item.qty}</td>
+                <td>${item.productName}</td>
+                <td>${item.quantity}</td>
                 <td>Tshs ${item.price?.toFixed(2)}</td>
                 <td>Tshs ${item.subtotal?.toFixed(2)}</td>
               </tr>
@@ -102,69 +102,181 @@ function PrintSale() {
   return <div>Loading receipt...</div>;
 }
 
+// components/Print.jsx - Updated Report Part
 function PrintReport() {
     const { id } = useParams();
-    const { data: report } = useGetReportById(id); // You need this hook
+    const { data: report } = useGetReportById(id);
 
     useEffect(() => {
         if (report) {
-            // Auto-print when report data loads
-            setTimeout(() => {
-                window.print();
-            }, 500);
+            const printContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>${report.type.toUpperCase()} REPORT - NEW DF HOTEL</title>
+    <style>
+        @media print {
+            body { 
+                font-family: 'Arial', sans-serif; 
+                font-size: 12px; 
+                margin: 0;
+                padding: 15px;
+            }
+            .no-print { display: none !important; }
+            .page-break { page-break-after: always; }
+            table { 
+                width: 100%; 
+                border-collapse: collapse; 
+                margin: 10px 0;
+                font-size: 10px;
+            }
+            th, td { 
+                border: 1px solid #ddd;
+                padding: 6px; 
+                text-align: left;
+            }
+            th { 
+                background-color: #f8f9fa;
+                font-weight: bold;
+            }
+            .report-header { 
+                text-align: center; 
+                margin-bottom: 20px;
+                border-bottom: 2px solid #333;
+                padding-bottom: 10px;
+            }
+            .report-footer { 
+                margin-top: 30px;
+                text-align: center;
+                font-size: 10px;
+                color: #666;
+            }
+            .summary { 
+                margin: 15px 0;
+                padding: 10px;
+                background-color: #f8f9fa;
+                border-left: 4px solid #007bff;
+            }
+        }
+        @media screen {
+            body { 
+                font-family: 'Arial', sans-serif; 
+                font-size: 14px; 
+                padding: 20px;
+            }
+            table { 
+                width: 100%; 
+                border-collapse: collapse; 
+                margin: 15px 0;
+            }
+            th, td { 
+                border: 1px solid #ddd;
+                padding: 8px; 
+                text-align: left;
+            }
+            th { 
+                background-color: #f8f9fa;
+            }
+            .report-header { 
+                text-align: center; 
+                margin-bottom: 30px;
+            }
+            .summary { 
+                margin: 20px 0;
+                padding: 15px;
+                background-color: #f8f9fa;
+                border-radius: 5px;
+            }
+            .btn-container { 
+                margin: 20px 0; 
+                text-align: center;
+            }
+            button { 
+                padding: 10px 20px; 
+                margin: 0 10px; 
+                background: #007bff;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="report-header">
+        <h1>NEW DF HOTEL</h1>
+        <h2>${report.type.charAt(0).toUpperCase() + report.type.slice(1)} Report</h2>
+        <p><strong>Period:</strong> ${new Date(report.startDate).toLocaleDateString()} to ${new Date(report.endDate).toLocaleDateString()}</p>
+        <p><strong>Generated On:</strong> ${new Date(report.createdAt).toLocaleString()} | <strong>By:</strong> ${report.generatedBy?.username || 'System'}</p>
+    </div>
+
+    ${report.content && report.content.length > 0 ? `
+        <div class="summary">
+            <h3>Report Summary</h3>
+            <p><strong>Total Records:</strong> ${report.content.length.toLocaleString()}</p>
+            ${report.type === 'sales' ? `<p><strong>Total Sales:</strong> Tshs ${report.content.reduce((sum, item) => sum + (item.totalPrice || 0), 0).toFixed(2)}</p>` : ''}
+            ${report.type === 'expenses' ? `<p><strong>Total Expenses:</strong> Tshs ${report.content.reduce((sum, item) => sum + (item.amount || 0), 0).toFixed(2)}</p>` : ''}
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    ${Object.keys(report.content[0]).map(key => `
+                        <th>${key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}</th>
+                    `).join('')}
+                </tr>
+            </thead>
+            <tbody>
+                ${report.content.map(row => `
+                    <tr>
+                        ${Object.keys(row).map(key => `
+                            <td>
+                                ${['totalPrice', 'amount', 'price', 'totalAmount'].includes(key) && typeof row[key] === 'number' ? 
+                                    `Tshs ${row[key].toFixed(2)}` : 
+                                    key === 'createdAt' ? 
+                                    new Date(row[key]).toLocaleString() :
+                                    typeof row[key] === 'object' ?
+                                    JSON.stringify(row[key]) :
+                                    row[key]
+                                }
+                            </td>
+                        `).join('')}
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    ` : `
+        <div class="alert">
+            <p>No data available for this report.</p>
+        </div>
+    `}
+
+    <div class="report-footer">
+        <p>Generated on ${new Date().toLocaleString()} | NEW DF HOTEL POS System</p>
+    </div>
+
+    <div class="btn-container no-print">
+        <button onclick="window.print()">Print Report</button>
+        <button onclick="window.close()">Close Window</button>
+    </div>
+
+    <script>
+        window.onload = function() {
+            window.print();
+        };
+    </script>
+</body>
+</html>`;
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(printContent);
+            printWindow.document.close();
         }
     }, [report]);
 
-    if (!report) {
-        return <div>Loading report...</div>;
-    }
-
-    return (
-        <div className="p-8 print:p-0">
-            {/* Printable report content */}
-            <div className="report-header text-center mb-8 print:mb-4">
-                <h1 className="text-2xl font-bold">{report.type.toUpperCase()} REPORT</h1>
-                <p>New DF Hotel</p>
-                <p>Period: {new Date(report.startDate).toLocaleDateString()} - {new Date(report.endDate).toLocaleDateString()}</p>
-            </div>
-
-            {/* Report content table */}
-            <table className="w-full border-collapse border">
-                <thead>
-                    <tr className="bg-gray-100">
-                        {Object.keys(report.content[0] || {}).map(key => (
-                            <th key={key} className="border p-2 text-left">{key}</th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {report.content.map((row, index) => (
-                        <tr key={index}>
-                            {Object.values(row).map((value, i) => (
-                                <td key={i} className="border p-2">{value}</td>
-                            ))}
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-
-            <div className="no-print mt-8 text-center">
-                <button 
-                    onClick={() => window.print()}
-                    className="bg-blue-500 text-white px-6 py-2 rounded mr-4"
-                >
-                    Print Again
-                </button>
-                <button 
-                    onClick={() => window.close()}
-                    className="bg-gray-500 text-white px-6 py-2 rounded"
-                >
-                    Close
-                </button>
-            </div>
-        </div>
-    );
-} 
+    return <div className="p-8 text-center">Preparing report for printing...</div>;
+}
 
 export default function Print({ type }) {
   const whatToPrint = type === 'sale' ? <PrintSale /> : <PrintReport />;

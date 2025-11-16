@@ -14,12 +14,12 @@ import Table from '../sharedComponents/table.jsx';
 
 function AddUser({setToast}){
     const{register,handleSubmit,watch,formState:{errors}}=useForm({mode:'onChange'});
-    const{mutate:createUser}=useCreateUser();
+    const{mutateAsync:createUser}=useCreateUser();
     const password=watch('password');
 
-    const onSubmit=(data)=>{
+    const onSubmit=async (data)=>{
         try{
-            createUser(data);
+            await createUser(data);
             setToast({isOpen:true,status:'success',message:'User added succesfully'});
         }catch(error){
             setToast({
@@ -79,11 +79,11 @@ function AddUser({setToast}){
 
 function AddBanking({setToast}){
     const {register,handleSubmit,formState:{errors}}=useForm({mode:'onChange'});
-    const {mutate:createBanking}=useCreateBanking();
+    const {mutateAsync:createBanking}=useCreateBanking();
 
-    const onSubmit=(data)=>{
+    const onSubmit=async (data)=>{
         try{
-            createBanking(data);
+            await createBanking(data);
             setToast({isOpen:true,status:'success',message:'Banking created succesfully'});
         }catch(error){
             setToast({isOpen:true,status:'danger',message:error.message});
@@ -122,12 +122,12 @@ function AddBanking({setToast}){
 
 function AddExpense({setToast}){
     const {register,handleSubmit,formState:{errors}}=useForm({mode:'onChange'});
-    const {mutate:createExpense}=useCreateExpense();
+    const {mutateAsync:createExpense}=useCreateExpense();
     const categories=['utilities','rent','maintenance','transportation','security','inventory','supplies','salaries','advertising','software','bank_charges','loan_interest','miscellaneous'];
 
-    const onSubmit=(data)=>{
+    const onSubmit=async (data)=>{
         try{
-            createExpense(data);
+            await createExpense(data);
             setToast({isOpen:true,status:'success',message:'Expense created succesfully'});
         }catch(error){
             setToast({isOpen:true,status:'danger',message:error.message});
@@ -170,12 +170,12 @@ function AddExpense({setToast}){
 
 function AddProduct({setToast}){
     const {register,handleSubmit,formState:{errors}}=useForm({mode:'onChange'});
-    const {mutate:createProduct}=useCreateProduct();
+    const {mutateAsync:createProduct}=useCreateProduct();
     const categories=['foods','drinks','services','others'];
 
-    const onSubmit=(data)=>{
+    const onSubmit=async (data)=>{
         try{
-            createProduct(data);
+            await createProduct(data);
             setToast({isOpen:true,status:'success',message:'Product created succesfully'});
         }catch(error){
             setToast({isOpen:true,status:'danger',message:error.message});
@@ -221,7 +221,7 @@ const AddSale=({setToast})=>{
     const[currentItem,setCurrentItem]=useState({id:'',name:'',price:0,quantity:1});
     const[paymentMethod,setPaymentMethod]=useState('');
     const {data,isLoading,isError,error}=useGetAllProducts();
-    const {mutate:createSale}=useCreateSale();
+    const {mutateAsync:createSale}=useCreateSale();
     const paymentMethods=['cash','card','mobile','transfer'];
     const navigate=useNavigate();
 
@@ -238,10 +238,10 @@ const AddSale=({setToast})=>{
     if(isLoading) return <div className='flex items-center justify-center'><div className='h-12 w-12 animate-spin rounded-full border-t-2 border-primary-dark'></div><p>Loading products...</p></div>;
     if(isError) return <div className='text-danger text-center'>Oops! {error.message}</div>;
 
-    const onSubmit=(e)=>{
+    const onSubmit=async (e)=>{
         e.preventDefault();
         try{
-            createSale({items:cart,paymentMethod,totalPrice:grandTotal});
+            await createSale({items:cart,paymentMethod,totalPrice:grandTotal});
             setToast({isOpen:true,status:'success',message:'Sale created succesfully'});
             navigate(-1);
         }catch(err){

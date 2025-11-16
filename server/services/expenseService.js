@@ -4,10 +4,6 @@ const PosError=require('../utils/posError')
 const expenseService = {
   getAllExpenses: async (search, limit, offset) => {
     const expenses= await expenseRepository.findAllExpenses(search, limit, offset);
-    if(expenses.length===0)
-    {
-      throw new PosError('Expenses not found',404)
-    }
     return expenses;
   },
 

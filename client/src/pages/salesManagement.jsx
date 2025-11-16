@@ -86,8 +86,7 @@ export default function SalesManagement() {
   const today = format(new Date(), 'yyyy-MM-dd');
   const queryParams = { search, limit, page };
 
- const { data: allSalesData, isLoading: allLoading, error: allSalesError } = useGetAllSales({
-  ...queryParams,
+ const { data: allSalesData, isLoading: allLoading, error: allSalesError } = useGetAllSales(queryParams, {
   enabled: isAdminOrManager,  
 });
 
@@ -109,8 +108,10 @@ if (allSalesError || cashierSalesError) {
 }
 
  const salesData = isCashier ? cashierSalesData : allSalesData;
+const sales = salesData?.sales || []; 
+const totalCount = salesData?.total || 0; 
 const isLoading = isCashier ? cashierLoading : allLoading;
-  const totalPages = Math.ceil(salesData?.length / limit);
+  const totalPages = Math.ceil(totalCount / limit);
 
   const handleSearchChange = (e) => {
     setSearchParams({ search: e.target.value, page: '1' });
@@ -162,8 +163,18 @@ const isLoading = isCashier ? cashierLoading : allLoading;
         </div>
       </td>
     </tr>
-  ) : (
-    salesData.sales?.map((sale) => (
+  ) :
+  sales.length === 0 ? (
+  <tr>
+    <td colSpan={isAdminOrManager ? 6 : 5} className="text-center py-8">
+      <div className="text-gray-500 text-lg">
+        {isCashier ? 'No sales found for today' : 'No sales found'}
+      </div>
+    </td>
+  </tr>
+): 
+(
+    sales?.map((sale) => (
       <SaleRow
         key={sale._id}
         sale={sale}

@@ -1,6 +1,6 @@
-import {Navigate} from 'react-router-dom';
 import {useAuth} from '../contexts/authContext.jsx';
 import NotAuthenticated from './notAuthenticated.jsx';
+import NotAuthorized from './notAuthorized.jsx';
 
 export default function ProtectedRoute({allowedRoles,children})
 {
@@ -18,12 +18,12 @@ if (loading) {
   }
 
    if (!user) {
-    return <Navigate to="/" replace />;
+    return <NotAuthenticated/>
   }
 
 if(!allowedRoles.includes(user.role))
 {
-    return <NotAuthenticated/>
+    return <NotAuthorized/>
 }
 return children;
 }

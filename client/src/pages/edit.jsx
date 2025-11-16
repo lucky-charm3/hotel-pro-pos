@@ -27,11 +27,11 @@ useEffect(() => {
     }
   }, [banking, reset]);
 
-const{mutate:updateBanking}=useUpdateBanking();
+const{mutateAsync:updateBanking}=useUpdateBanking();
 
-const onSubmit=(data)=>{
+const onSubmit=async (data)=>{
     try{
-    updateBanking(data);
+    await updateBanking(data);
     setToast(prev=>({...prev,
                                          status:'success',
                                          message:'Banking updated succesfully'}))
@@ -112,15 +112,15 @@ category:expense?.category,
 description:expense?.description})                                                                                                                                      
 },[expense,reset])
 
- const{mutate:updateExpense}=useUpdateExpense();
+ const{mutateAsync:updateExpense}=useUpdateExpense();
 
  const categories=[ 'utilities', 'rent','maintenance','transportation', 'security',
     'inventory','supplies','salaries','advertising','software',
     'bank_charges','loan_interest','miscellaneous']
 
-const onSubmit=(data)=>{
+const onSubmit=async (data)=>{
     try{
-  updateExpense(data);
+  await updateExpense(data);
   setToast(prev=>({...prev,
                         isOpen:true,
                         message:'Expense updated successfully',
@@ -204,13 +204,13 @@ function UpdateProduct({setToast})
 })
    },[product,reset])
 
-const{mutate:updateProduct}=useUpdateProduct();
+const{mutateAsync:updateProduct}=useUpdateProduct();
 
     const categories=['foods','drinks','services','others']
 
-    const onSubmit=(data)=>{
+    const onSubmit=async (data)=>{
         try{
-     updateProduct(data);
+     await updateProduct(data);
      setToast(prev=>({...prev, 
                       status:'success',
                       message:'Product updated succesfully'}
@@ -318,13 +318,13 @@ function UpdateUser({setToast})
     confirmPassword:user?.password
     })
     },[user,reset])
-    const{mutate:updateUser}=useUpdateUser();
+    const{mutateAsync:updateUser}=useUpdateUser();
 
     const password=watch('password');
 
-    const onSubmit=(data)=>{
+    const onSubmit=async (data)=>{
         try{
-            updateUser(data);
+            await updateUser(data);
             setToast(prev=>({...prev,
                                                     isOpen:true,
                                                     status:'success',

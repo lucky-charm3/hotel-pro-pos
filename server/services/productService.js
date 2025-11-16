@@ -4,10 +4,6 @@ const PosError=require('../utils/posError')
 const productService = {
   getAllProducts: async (search, limit, offset) => {
    const products= await productRepository.findAllProducts(search, limit, offset);
-  if(products.length===0)
-  {
-    throw new PosError('Products not found',404)
-  }
   return products;
   },
 

@@ -18,10 +18,19 @@ export const saleService = {
         return response.data;
     },
 
-    getCashierSales: async (params = {}) => {
-        const response=await axiosInstance.get(`${SALE_BASE_URL}/cashier/sales`, { params });
-        return response.data;
-    },
+   getCashierSales: async (userId, params = {}) => {
+  const response = await axiosInstance.get(`${SALE_BASE_URL}/cashier/sales`, { 
+    params: {
+      search: params.search,
+      start_date: params.start_date,
+      end_date: params.end_date,
+      limit: params.limit,
+      page: params.page,
+      userId: userId
+    }
+  });
+  return response.data;
+},
 
     getTotalSalesToday: async () => {
         const response=await axiosInstance.get(`${SALE_BASE_URL}/cashier/today-total`);

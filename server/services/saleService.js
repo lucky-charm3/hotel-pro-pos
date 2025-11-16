@@ -5,19 +5,11 @@ const PosError=require('../utils/posError')
 const saleService = {
   getAllSales: async (search, startDate, endDate, limit, offset) => {
     const sales= await saleRepository.findAllSales(search, startDate, endDate, limit, offset);
-    if(sales.length===0)
-  {
-    throw new PosError('Sales not found',404);
-  }
   return sales;
   },
 
   getCashierSales: async (userId, search, startDate, endDate, limit, offset) => {
     const sales= await saleRepository.findSalesByUser(userId, search, startDate, endDate, limit, offset);
-   if(sales.length===0)
-   {
-    throw new PosError('Sales not found',404)
-   }
     return sales;
   },
 

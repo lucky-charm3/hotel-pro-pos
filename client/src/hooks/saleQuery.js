@@ -1,17 +1,17 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { saleService } from '../services/saleService';
+import {useAuth} from '../contexts/authContext.jsx'
 
 export const SALE_QUERY_KEY = 'sales';
 export const CASHIER_SALES_KEY = 'cashierSales';
 export const TOTAL_SALES_KEY = 'totalSales';
 
-export const useGetAllSales = (params={},options={}) => {
-    return useQuery({
-        queryKey: [SALE_QUERY_KEY, params],
-        queryFn: () => saleService.getAllSales(params),
-        staleTime:5*60*1000,
-        ...options
-    });
+export const useGetAllSales = (params = {}, options = {}) => {
+  return useQuery({
+    queryKey: [SALE_QUERY_KEY, params],
+    queryFn: () => saleService.getAllSales(params),
+    ...options
+  });
 };
 
 export const useGetSaleById = (id, options = {}) => {
@@ -32,13 +32,16 @@ export const useGetSaleDetails = (id, options = {}) => {
     });
 };
 
-export const useGetCashierSales = (options={}) => {
-    return useQuery({
-        queryKey: [CASHIER_SALES_KEY],
-        queryFn: () => saleService.getCashierSales(),
-        staleTime:5*60*1000,
-        ...options
-    });
+export const useGetCashierSales = (options = {}) => {
+  const { user } = useAuth(); 
+  
+  return useQuery({
+    queryKey: [CASHIER_SALES_KEY, user?._id, options], 
+    queryFn: () => saleService.getCashierSales(user?._id, options),
+    staleTime: 5 * 60 * 1000,
+    enabled: !!user?._id, 
+    ...options
+  });
 };
 
 export const useGetTotalSalesToday = () => {

@@ -1,4 +1,5 @@
 const Sale = require('../models/saleModel');
+const mongoose=require('mongoose');
 
 const saleRepository = {
   findAllSales: async (search, startDate, endDate, limit = 10, offset = 0) => {
@@ -29,12 +30,12 @@ const saleRepository = {
   findSalesByUser: async (userId, search, startDate, endDate, limit = 10, offset = 0) => {
     let query = { cashier: userId, status: 'completed' };
     
-    if (startDate && endDate) {
-      query.createdAt = {
-        $gte: new Date(startDate),
-        $lte: new Date(endDate)
-      };
-    }
+   if (startDate && endDate) {
+  query.createdAt = {
+    $gte: new Date(startDate + 'T00:00:00.000Z'),
+    $lte: new Date(endDate + 'T23:59:59.999Z')
+  };
+}
 
     if (search) {
       query.$or = [
@@ -91,13 +92,17 @@ const saleRepository = {
     );
   },
 
-getTotalSalesAmount: async (userId = null, startDate = null, endDate = null) => {
+getTotalSalesAmount: async (startDate = null, endDate = null,userId = null) => {
   let matchQuery = {};
   
   if (userId) {
-    matchQuery.userId = userId;
-  }
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        console.log("Invalid userId:", userId);
+        return [];
+    }
 
+    matchQuery.cashier = new mongoose.Types.ObjectId(userId);
+}
   if (startDate && endDate) {
     matchQuery.createdAt = {
       $gte: new Date(startDate),
@@ -110,7 +115,7 @@ getTotalSalesAmount: async (userId = null, startDate = null, endDate = null) => 
     { 
       $group: { 
         _id: null, 
-        total: { $sum: '$totalAmount' },
+        total: { $sum: '$totalPrice' }, 
         count: { $sum: 1 }
       } 
     }

@@ -5,10 +5,6 @@ const PosError=require('../utils/posError')
 const userService = {
   getAllUsers: async (search, limit, offset) => {
     const users= await userRepository.findAllUsers(search, limit, offset);
-    if(users.length===0)
-    {
-      throw new PosError('Users not found',404)
-    }
     return users;
   },
 

@@ -25,11 +25,11 @@ export default function AccountManagement()
 
     const{setToast}=useOutletContext();
 
-    const {mutate:updateProfile}=useUpdateProfile();
+    const {mutateAsync:updateProfile}=useUpdateProfile();
 
-    const onSubmit=(formData)=>{
+    const onSubmit=async (formData)=>{
         try{
-        updateProfile(formData)
+        await updateProfile(formData)
         setToast(prev=>({...prev,
                                                     isOpen:true,
                                                     status:'success',

@@ -162,39 +162,22 @@ const reportService = {
     res.end();
   },
 
-  printReportHTML: async (id, res) => {
-    const report = await reportRepository.findReportById(id).populate('generatedBy', 'username');
-    
-    if (!report) {
-      return res.status(404).send('<h2>Report not found</h2>');
-    }
-
-    const friendlyHeaders = {
-      '_id': 'ID',
-      'cashier': 'Cashier',
-      'totalPrice': 'Total Price',
-      'items': 'Items',
-      'name': 'Name',
-      'product': 'Product',
-      'user': 'User',
-      'username': 'Username',
-      'quantity': 'Quantity',
-      'amount': 'Amount',
-      'price': 'Price',
-      'paymentMethod': 'Payment Method',
-      'category': 'Category',
-      'type': 'Type',
-      'stock': 'Stock',
-      'barcode': 'Barcode',
-      'createdAt': 'Date',
-      'performedBy': 'Performed By',
-      'recordedBy': 'Recorded By'
-    };
-
-    const html = generateHTMLReport(report, friendlyHeaders);
-    res.setHeader('Content-Type', 'text/html');
-    res.send(html);
+  // Backend - reportService.js (remove HTML generation)
+printReportHTML: async (id, res) => {
+  const report = await reportRepository.findReportById(id).populate('generatedBy', 'username');
+  if (!report) {
+    return res.status(404).json({ success: false, message: 'Report not found' });
   }
+  
+  // Return clean data, let frontend handle presentation
+  res.json({
+    success: true,
+    report: {
+      ...report.toObject(),
+      generatedBy: report.generatedBy
+    }
+  });
+}
 };
 
 
@@ -235,196 +218,5 @@ function getDateRange(range) {
   };
 }
 
-
-function generateHTMLReport(report, friendlyHeaders) {
-  const data = report.content || [];
-  const type = report.type.charAt(0).toUpperCase() + report.type.slice(1);
-  
-  let totalAmount = 0;
-  if (report.type === 'sales') {
-    totalAmount = data.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
-  } else if (report.type === 'expenses') {
-    totalAmount = data.reduce((sum, item) => sum + (item.amount || 0), 0);
-  }
-
-  return `
-<!DOCTYPE html>
-<html>
-<head>
-    <title>${type} Report</title>
-    <style>
-        @media print {
-            body { 
-                font-family: 'Arial', sans-serif; 
-                font-size: 12px; 
-                margin: 0;
-                padding: 15px;
-                color: 
-                background: 
-            }
-            .no-print { display: none !important; }
-            .page-break { page-break-after: always; }
-            table { 
-                width: 100%; 
-                border-collapse: collapse; 
-                margin: 10px 0;
-                font-size: 11px;
-            }
-            th, td { 
-                border: 1px solid 
-                padding: 6px; 
-                text-align: left;
-                page-break-inside: avoid;
-            }
-            th { 
-                background-color: 
-                font-weight: bold;
-            }
-            .report-header { 
-                text-align: center; 
-                margin-bottom: 20px;
-                border-bottom: 2px solid 
-                padding-bottom: 10px;
-            }
-            .report-footer { 
-                margin-top: 30px;
-                text-align: center;
-                font-size: 10px;
-                color: 
-            }
-            .summary { 
-                margin: 15px 0;
-                padding: 10px;
-                background-color: 
-                border-left: 4px solid 
-            }
-        }
-        @media screen {
-            body { 
-                font-family: 'Arial', sans-serif; 
-                font-size: 14px; 
-                padding: 20px;
-                background-color: 
-            }
-            .print-container { 
-                background: white; 
-                padding: 30px; 
-                border: 1px solid 
-                box-shadow: 0 0 10px rgba(0,0,0,0.1);
-                max-width: 1000px;
-                margin: 0 auto;
-            }
-            table { 
-                width: 100%; 
-                border-collapse: collapse; 
-                margin: 15px 0;
-            }
-            th, td { 
-                border: 1px solid 
-                padding: 8px; 
-                text-align: left;
-            }
-            th { 
-                background-color: 
-                color: white;
-            }
-            tr:nth-child(even) { background-color: 
-            .report-header { 
-                text-align: center; 
-                margin-bottom: 30px;
-                color: 
-            }
-            .summary { 
-                margin: 20px 0;
-                padding: 15px;
-                background-color: 
-                border-radius: 5px;
-            }
-            .btn-container { 
-                margin: 20px 0; 
-                text-align: center;
-            }
-            button { 
-                padding: 10px 20px; 
-                margin: 0 10px; 
-                background: 
-                color: white;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-            }
-            button:hover { background: 
-        }
-    </style>
-</head>
-<body>
-    <div class="print-container">
-        <div class="report-header">
-            <h1>${type} Report</h1>
-            <p><strong>Business Name:</strong> POS System</p>
-            <p><strong>Report Period:</strong> ${new Date(report.startDate).toLocaleDateString()} to ${new Date(report.endDate).toLocaleDateString()}</p>
-            <p><strong>Generated On:</strong> ${new Date(report.createdAt).toLocaleString()}</p>
-            <p><strong>Generated By:</strong> ${report.generatedBy?.username || 'System'}</p>
-        </div>
-
-        ${data.length > 0 ? `
-            <div class="summary">
-                <h3>Report Summary</h3>
-                <p><strong>Total Records:</strong> ${data.length.toLocaleString()}</p>
-                ${totalAmount > 0 ? `<p><strong>Total ${report.type === 'sales' ? 'Sales' : 'Expenses'}:</strong> Tshs ${totalAmount.toFixed(2)}</p>` : ''}
-            </div>
-
-            <table>
-                <thead>
-                    <tr>
-                        ${Object.keys(data[0]).map(key => `
-                            <th>${friendlyHeaders[key] || key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}</th>
-                        `).join('')}
-                    </tr>
-                </thead>
-                <tbody>
-                    ${data.map(row => `
-                        <tr>
-                            ${Object.keys(row).map(key => `
-                                <td>
-                                    ${['totalPrice', 'amount', 'price'].includes(key) && typeof row[key] === 'number' ? 
-                                        `Tshs ${row[key].toFixed(2)}` : 
-                                        key === 'createdAt' ? 
-                                        new Date(row[key]).toLocaleString() :
-                                        typeof row[key] === 'object' ?
-                                        JSON.stringify(row[key]) :
-                                        row[key]
-                                    }
-                                </td>
-                            `).join('')}
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        ` : `
-            <div class="alert">
-                <p>No data available for this report.</p>
-            </div>
-        `}
-
-        <div class="report-footer">
-            <p>Generated on ${new Date().toLocaleString()} | Page 1 of 1</p>
-        </div>
-
-        <div class="btn-container no-print">
-            <button onclick="window.print()">Print Report</button>
-            <button onclick="window.close()">Close Window</button>
-        </div>
-    </div>
-
-    <script>
-        window.onload = function() {
-            
-            
-        };
-    </script>
-</body>
-</html>`;
-}
 
 module.exports = reportService;

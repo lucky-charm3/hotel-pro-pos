@@ -23,12 +23,14 @@ const getDashboardSummary = asyncHandler(async (req, res) => {
     totalUsers,
     bankingSummary
   ] = await Promise.all([
-    saleService.getTotalSalesAmount(req.user.id, today, today),
-    saleService.getTotalSalesAmount(req.user._id, weekStart, today),
-    saleService.getTotalSalesAmount(req.user._id, monthStart, today),
-    expenseService.getTotalExpensesAmount(req.user._id, today, today),
-    expenseService.getTotalExpensesAmount(req.user._id, weekStart, today),
-    expenseService.getTotalExpensesAmount(req.user._id, monthStart, today),
+    saleService.getTotalSalesAmount(today, today, req.user.role === 'cashier' ? req.user._id : null),
+    saleService.getTotalSalesAmount(weekStart, today, req.user.role === 'cashier' ? req.user._id : null),
+    saleService.getTotalSalesAmount(monthStart, today, req.user.role === 'cashier' ? req.user._id : null),
+    
+    expenseService.getTotalExpensesAmount(req.user.role === 'cashier' ? req.user._id : null, today, today),
+    expenseService.getTotalExpensesAmount(req.user.role === 'cashier' ? req.user._id : null, weekStart, today),
+    expenseService.getTotalExpensesAmount(req.user.role === 'cashier' ? req.user._id : null, monthStart, today),
+    
     productService.getTotalProducts(),
     userService.getTotalUsersCount(),
     bankingService.getBankingSummary(weekStart, today)
@@ -56,4 +58,4 @@ const getDashboardSummary = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports=getDashboardSummary;
+module.exports=getDashboardSummary

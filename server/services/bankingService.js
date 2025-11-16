@@ -4,10 +4,6 @@ const PosError=require('../utils/posError')
 const bankingService = {
   getAllBanking: async (search, limit, offset) => {
    const bankings= await bankingRepository.findAllBanking(search, limit, offset);
-   if(bankings.length===0)
-   {
-    throw new PosError('Banking details not found',404)
-   }
    return bankings;
   },
 

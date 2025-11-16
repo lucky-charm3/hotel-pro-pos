@@ -4,7 +4,7 @@ const schemaValidator=(schema)=>{
 
     if(!error)
     {
-      next();
+      return next();
     }
 
     res.status(400).json({

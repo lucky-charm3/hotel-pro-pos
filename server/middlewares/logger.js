@@ -44,11 +44,7 @@ const logger=(req,res,next)=>{
       if(safeBody.password) delete safeBody.password;
 
       logEntry.requestBody=safeBody
-
-      if(res.statusCode>=400)
-      {
-        logEntry.response=responseBody
-      }
+      logEntry.responseBody=responseBody;
 
       if(res.statusCode>=500)
       {

@@ -7,6 +7,7 @@ import Table from '../sharedComponents/table.jsx';
 import Pagination from '../sharedComponents/pagination.jsx';
 import ActionDropdown from '../modals/actionDropdown.jsx';
 
+
 function ReportRow({ report, isAdminOrManager }) {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
@@ -25,9 +26,8 @@ function ReportRow({ report, isAdminOrManager }) {
         }
     ];
 
-    // Add edit/delete only for admins/managers
     if (isAdminOrManager) {
-        actions.splice(1, 0, { // Add edit at position 1
+        actions.splice(1, 0, { 
             type: 'edit',
             label: 'Edit', 
             onClick: () => navigate(`/mainRoute/reportsManagement/${report._id}/edit`)
@@ -80,7 +80,6 @@ export default function ReportsManagement() {
     const page = parseInt(searchParams.get('page') || 1);
     const { setToast } = useOutletContext();
     
-    // STATE FOR REPORT PARAMETERS
     const [reportType, setReportType] = useState('sales');
     const [dateRange, setDateRange] = useState('today');
     const [customStartDate, setCustomStartDate] = useState('');
