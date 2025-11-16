@@ -15,7 +15,7 @@ export default function NotAuthorized() {
             <p className='text-xl font-semibold'>
                 Let’s guide you back safely. You can return back or contact admin if this seems wrong.
             </p>
-            <Button onClick={() => navigate(-1)} color1='primary' color2='primary-dark'>
+            <Button onClick={() => navigate('/mainRoute')} color1='primary' color2='primary-dark'>
                 Go Back
             </Button>
         </div>

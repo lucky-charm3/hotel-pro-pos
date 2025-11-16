@@ -1,4 +1,4 @@
-import  { useRef, useEffect } from 'react';
+import  { useRef, useEffect,useState } from 'react';
 import { FaEllipsisV, FaEye, FaEdit, FaTrash,FaPrint } from 'react-icons/fa';
 
 const iconMap = {
@@ -15,6 +15,7 @@ const colorMap = {
 };
 
 export default function ActionDropdown({ isOpen,setIsOpen,actions,triggerRef}) {
+  const [dropdownPosition, setDropdownPosition] = useState('bottom');
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -23,6 +24,18 @@ export default function ActionDropdown({ isOpen,setIsOpen,actions,triggerRef}) {
         setIsOpen(false);
       }
     }
+
+    if (isOpen && triggerRef.current) {
+  const triggerRect = triggerRef.current.getBoundingClientRect();
+  const spaceBelow = window.innerHeight - triggerRect.bottom;
+  const dropdownHeight = 200;
+  
+  if (spaceBelow < dropdownHeight) {
+    setDropdownPosition('top');
+  } else {
+    setDropdownPosition('bottom');
+  }
+}
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -39,7 +52,8 @@ export default function ActionDropdown({ isOpen,setIsOpen,actions,triggerRef}) {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-10">
+        <div className={`absolute right-0 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50
+  ${dropdownPosition === 'top' ? 'bottom-full mb-2' : 'top-full mt-2'}`}>
           <div className="py-1">
             {actions.map((action, index) => {
               const IconComponent = iconMap[action.type];

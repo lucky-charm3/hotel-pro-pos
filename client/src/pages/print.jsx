@@ -18,9 +18,10 @@ function PrintSale() {
         <style>
           body { 
             font-family: 'Courier New', monospace; 
-            font-size: 14px; 
+            font-size: 18px; 
             margin: 20px;
             max-width: 300px;
+            color: #000000
           }
           .header { text-align: center; margin-bottom: 15px; }
           .divider { border-top: 1px dashed #000; margin: 10px 0; }
